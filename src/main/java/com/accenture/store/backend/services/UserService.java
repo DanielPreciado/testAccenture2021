@@ -162,7 +162,7 @@ public class UserService {
 		  Date date = new Date();
 		  Optional<Order> order = orderRepo.findById(orderId);
 		  Order tempOrder = order.get();
-		  if(tempOrder.getDateOrder().getTime()- date.getTime() <=18000000) 
+		  if(date.getTime()-tempOrder.getDateOrder().getTime() <=18000000) 
 		  {
 			  tempOrder.setTotal(tempOrder.getTotal()+product.getPrice());
 			  
@@ -180,7 +180,6 @@ public class UserService {
 	   * delete an product in an order of user.
 	   *
 	   * @param product the product
-	   * @return the product
 	   */
 	  @DeleteMapping("/users/{id}/orders/{order}/products")
 	  public void deleteProduct( @PathVariable(value = "order")Integer orderId, @RequestBody Integer idProduct) {
@@ -193,6 +192,51 @@ public class UserService {
 		  orderRepo.save(tempOrder);
 		  product.setOrder(order.get());
 	      productRepo.delete(product);
+	  }
+	  
+	  /**
+	   * delete an invoice of a order
+	   *
+	   * @param product the product
+	   */
+	  @DeleteMapping("/users/{id}/orders/{order}/invoice")
+	  public void deleteInvoiceOfOrder( @PathVariable(value = "order")Integer orderId, @RequestBody Integer idInvoice) {
+		  
+		  Date date = new Date();
+		  Optional<Order> order = orderRepo.findById(orderId);
+		  Order tempOrder = order.get();
+		  Invoice invoice = InvoiceRepo.getOne(idInvoice);
+		  
+		  if( date.getTime()-tempOrder.getDateOrder().getTime() <=43200000) 
+		  {
+			 
+			  tempOrder.setInvoice(null);
+			  tempOrder.setState("CANCELADA");
+			  
+			  orderRepo.save(tempOrder);
+			  invoice.setOrder(null);
+		      InvoiceRepo.delete(invoice);
+		  }
+		  else 
+		  {
+			  tempOrder.setState("CANCELADA");
+			  Invoice sobreCostoCancelacion= new Invoice(date);
+			  sobreCostoCancelacion.setIva(0.0);
+			  sobreCostoCancelacion.setPrice(tempOrder.getTotal()*0.10);
+			  
+			  
+			  InvoiceRepo.save(sobreCostoCancelacion);
+			  tempOrder.setInvoice(sobreCostoCancelacion);
+			  
+			  orderRepo.save(tempOrder);
+			  invoice.setOrder(null);
+		      InvoiceRepo.delete(invoice);
+		      
+			  
+		  }
+
+		  
+		
 	  }
 	  
 	  
