@@ -8,6 +8,7 @@ de.preciado@uniandes.edu.co
 link swagger: http://localhost:8080/swagger-ui/index.html
 link base api: http://localhost:8080/store/api/
 link Repositorio https://github.com/DanielPreciado/testAccenture2021.git
+link h2 database managment:http://localhost:8080/h2-console/login.jsp?jsessionid=462562380ab010525fe065a8c2dcde6c
 tel:3124193521
 
 se integro swagger para hacer más comodo la ejecucion de pruebas para comprobar 
